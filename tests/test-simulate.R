@@ -8,7 +8,7 @@ fi.val <- "~/Documents/hls/research/Simulation_Values_to_estimate.xls"
 dt.values <- read_excel(fi.val) %>>%
   data.table
 
-dt.values[1, {
+system.time(dt.out <- dt.values[, {
   set.seed(1)
   AJL::simulate(tau = c(tau1, tau2, tau3), release.rate = release_rate
   , iter = 1, n = num_arrestees, a = alpha, b = beta
@@ -20,4 +20,5 @@ dt.values[1, {
     days_incarc_mean = mean(days_incarc[!released]),
     days_incarc_var = sd(days_incarc[!released])^2
     ), by="treated,tau"])
-  }]
+  }, by="run,iteration"])
+dt.out
