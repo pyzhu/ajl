@@ -16,9 +16,5 @@ simulate <- function(tau = 1, release.rate, iter, n, a, b, mu, sigma, k = .32, t
   dt[, obs_risk := true_risk + treated * noise * tau + (1 - treated) * noise]
   dt[, released := ecdf(obs_risk)(obs_risk) <= release_rate, by="iter,treated"]
 
-  # add days incarcerated according to a gamma distribution
-  # using ceiling to get minimum 1 day
-  dt[, days_incarc := ceiling(rgamma(.N, shape = k, scale = theta))]
-
   return(dt)
 }

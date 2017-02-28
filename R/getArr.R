@@ -11,5 +11,9 @@ getArr <- function(iter, n, a, b, mu, sigma, k, theta) {
   dt[, treated := as.numeric(sample(seq.int(.N) <= .N/2))]
   dt[, psa_flag := as.numeric(sample(seq.int(.N) <= .N/2))]
 
+  # add days incarcerated according to a gamma distribution
+  # using ceiling to get minimum 1 day
+  dt[, days_incarc := ceiling(rgamma(.N, shape = k, scale = theta))]
+
   return(dt)
 }
