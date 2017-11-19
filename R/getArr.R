@@ -10,8 +10,9 @@ getArr <- function(n, num.obs.nonwhite, a, b, mu, sigma, k, theta) {
   dt[, true_risk := rbeta(.N, a, b)]
   
   # Set biases according to race, nonwhite = 1
+  # no systematic bias if white
   dt[, nonwhite := c(rep(TRUE, num.obs.nonwhite), rep(FALSE, .N-num.obs.nonwhite))]
-  dt[, noise := rnorm(.N, mu * as.numeric(nonwhite), sigma), by=nonwhite] # no systematic bias if white
+  dt[, noise := rnorm(.N, mu * as.numeric(nonwhite), sigma), by=nonwhite] 
 
   # given the true risk, draw from binomial
   # TODO: would give false if true_risk = 1

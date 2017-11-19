@@ -5,7 +5,7 @@ library(pipeR)
 library(testthat)
 
 # change this to where the file is located
-load_all("~/Documents/hls/research/ajl")
+load_all("~/hls/research/ajl")
 fi.val <- "/Users/pyz/Dropbox/PRAI Simulations (1)/Peter/Dataset_for_Simulation_20171108.xls"
 
 dt.values <- read_excel(fi.val) %>>%
@@ -20,18 +20,28 @@ test_that("setting the right number of whites and nonwhites", {
               , throws_error())
 })
 
+test_that("simulate", {
+  expect_is(simulateRelease(
+    tau = c(0.045568121,	0.646406721,	0.670479369, 0)
+    , release.rate = 0.79919696
+    , n = 3994
+    , num.obs.nonwhite = 999
+    , a = .5, b = .45
+    , mu = 0, sigma = 0.05
+    , haphazard = FALSE), "data.table")
+})
 
 
 # create iterations and aggregate into summary data
 system.time(
-dt.sim <- dt.values[run == 44 & iteration == 76, {
+dt.sim <- dt.values[run %between% c(1, 20), {
   # set.seed(seed)
-  simulate(
-    tau = c(tau1, tau2, tau3), release.rate = release_rate
+  simulateRelease(
+    tau = c(tau1, tau2, tau3, tau4), release.rate = release_rate
   , n = num_obs, num.obs.nonwhite = num_obs_nonwhite
   , a = alpha, b = beta
   , mu = gamma, sigma = sigma
-  , haphazard = TRUE) %>>%
+  , haphazard = FALSE) %>>%
     (.[, list(
       num_arrestees = .N,
       nonwhite,
