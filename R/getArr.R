@@ -1,8 +1,17 @@
-getArr <- function(iter, n, a, b, mu, sigma, k, theta) {
-  dt <- CJ(iter = seq.int(iter), arr_id = seq.int(n))
-  setkey(dt, iter, arr_id)
-  dt[, `:=`(true_risk = rbeta(.N, a, b)
-            , noise = rnorm(.N, mu, sigma))]
+#'
+#'
+#' @import testthat
+getArr <- function(n, num.obs.nonwhite, a, b, mu, sigma, k, theta) {
+  # throw an error if num.obs.nonwhite is greater than n
+  stopifnot(n > num.obs.nonwhite)  
+    
+  dt <- data.table(arr_id = seq.int(n), key="arr_id")
+  # setkey(dt, arr_id)
+  dt[, true_risk := rbeta(.N, a, b)]
+  
+  # Set biases according to race, nonwhite = 1
+  dt[, nonwhite := c(rep(TRUE, num.obs.nonwhite), rep(FALSE, .N-num.obs.nonwhite))]
+  dt[, noise := rnorm(.N, mu * as.numeric(nonwhite), sigma), by=nonwhite] # no systematic bias if white
 
   # given the true risk, draw from binomial
   # TODO: would give false if true_risk = 1
