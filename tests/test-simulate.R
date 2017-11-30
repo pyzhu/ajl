@@ -34,7 +34,10 @@ dt.sim <- dt.values[run == 99, {
   , mu = gamma, sigma = sigma
   , haphazard = TRUE) %>>%
     (.[, list(
-      num_arrestees = .N,
+      num_obs_group = .N,
+      num_obs,
+      num_obs_white,
+      num_obs_non_white,
       nonwhite,
       true_risk,
       alpha = alpha[1],
@@ -43,9 +46,9 @@ dt.sim <- dt.values[run == 99, {
       sigma = sigma[1],
       release_rate = release_rate[1],
       released,
-      misbehave
+      misbehave,
       # failure = sum(released * misbehave),
-      # failure_rate = sum(released * misbehave) / .N,
+      failure_rate = sum(released * misbehave) / .N
       # days_incarc = sum(days_incarc[!released]),
       # days_incarc_mean = mean(days_incarc[!released]),
       # days_incarc_var = sd(days_incarc[!released])^2
@@ -59,13 +62,14 @@ dt.sim[, list(sum(released) / .N), by=nonwhite]
 
 # # format data to be written to csv
 # # TODO: deprecated, but should be the same idea.
-# dt.sim[, list(
-#   control_failure1 = failure_rate[which(treated == 0)],
+dt.sim[, list(
+  control_failure1 = mean(failure_rate[which(treated == 0)]),
 #   control_failure2 = failure_rate[which(treated == 0)],
 #   control_failure3 = failure_rate[which(treated == 0)],
-#   treatment_failure1 = failure_rate[which(frank(tau, ties.method = "first") == 2 & treated > 0)],
-#   treatment_failure2 = failure_rate[which(frank(tau, ties.method = "first") == 3 & treated > 0)],
-#   treatment_failure3 = failure_rate[which(frank(tau, ties.method = "first") == 4 & treated > 0)],
+  treatment_failure1 = mean(failure_rate[which(frank(tau, ties.method = "dense") == 3 & treated > 0)]),
+  treatment_failure2 = mean(failure_rate[which(frank(tau, ties.method = "dense") == 4 & treated > 0)]),
+  treatment_failure3 = mean(failure_rate[which(frank(tau, ties.method = "dense") == 5 & treated > 0)]),
+  treatment_failure4 = mean(failure_rate[which(frank(tau, ties.method = "dense") == 2 & treated > 0)])
 #   mean_days_control1 = days_incarc_mean[which(treated == 0)],
 #   mean_days_control2 = days_incarc_mean[which(treated == 0)],
 #   mean_days_control3 = days_incarc_mean[which(treated == 0)],
@@ -78,4 +82,4 @@ dt.sim[, list(sum(released) / .N), by=nonwhite]
 #   variance_days_treatment1 = days_incarc_var[which(frank(tau, ties.method = "first") == 2 & treated > 0)],
 #   variance_days_treatment2 = days_incarc_var[which(frank(tau, ties.method = "first") == 3 & treated > 0)],
 #   variance_days_treatment3 = days_incarc_var[which(frank(tau, ties.method = "first") == 4 & treated > 0)]
-#   ), by="run,iteration,num_arrestees,alpha,beta,gamma,sigma,release_rate"]
+), by="run,iteration,num_obs,num_obs_white,num_obs_nonwhite,alpha,beta,gamma,sigma,release_rate"]
