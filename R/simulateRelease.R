@@ -15,7 +15,7 @@ simulateRelease <- function(tau = 1, release.rate, n, num.obs.nonwhite, a, b, mu
   dt <- data.table:::merge.data.table(dt, arrestees, by="arr_id")
     
   # make sure we have the right number of rows
-  assert_that(nrow(dt) == length(unique(arrestees$arr_id)) / 2 * (length(tau) + 1)
+  assert_that(nrow(dt) == length(unique(arrestees$arr_id)) / 2 * (length(tau) + 1))
 
   # add in the scalars
   dt[, release_rate := release.rate]
